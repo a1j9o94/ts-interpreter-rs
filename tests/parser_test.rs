@@ -67,9 +67,9 @@ fn test_parse_input_file() {
         statements.push(parser.parse_statement().unwrap());
     }
 
-    // For now, we only expect the first 7 statements to parse
+    // For now, we only expect the first 9 statements to parse
     // (the ones that aren't commented out)
-    assert_eq!(statements.len(), 7);
+    assert_eq!(statements.len(), 9);
 
     // Check specific statements
     match &statements[0] {
@@ -93,5 +93,21 @@ fn test_parse_input_file() {
             );
         },
         _ => panic!("Expected let statement"),
+    }
+}
+
+#[test]
+fn test_complex_arithmetic() {
+    let cases = vec![
+        ("(5 + 3) * 2", 16.0),  // Parentheses
+        ("2 * 3 + 4", 10.0),    // Multiplication before addition
+        ("2 + 3 * 4", 14.0),    // Multiplication before addition
+        ("10 / 2 * 3", 15.0),   // Left-to-right for same precedence
+    ];
+
+    for (input, expected) in cases {
+        let mut parser = Parser::new(input);
+        let expr = parser.parse_expression().unwrap();
+        assert_eq!(expr.evaluate().unwrap(), expected);
     }
 }

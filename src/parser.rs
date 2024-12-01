@@ -80,20 +80,59 @@ impl Parser {
     }
 
     pub fn parse_expression(&mut self) -> Result<Expression, String> {
-        let left = self.parse_primary()?;
+        self.parse_binary_expression(0) // Start with lowest precedence
+    }
 
-        if self.is_operator(&self.current_token) {
+    fn get_operator_precedence(token: &Token) -> u8 {
+        match token {
+            Token::Plus | Token::Minus => 1,
+            Token::Star | Token::Slash => 2,
+            _ => 0,
+        }
+    }
+
+    fn parse_binary_expression(&mut self, precedence: u8) -> Result<Expression, String> {
+        let mut left = self.parse_atom()?;
+        println!("Parsed left side: {:?}", left);
+
+        while self.is_operator(&self.current_token) {
+            let op_precedence = Self::get_operator_precedence(&self.current_token);
+            println!("Current operator: {:?}, precedence: {}, min precedence: {}", 
+                    self.current_token, op_precedence, precedence);
+            
+            if op_precedence <= precedence {
+                break;
+            }
+
             let operator = self.current_token.clone();
             self.next_token(); // consume operator
-            let right = self.parse_primary()?;
+
+            let right = self.parse_binary_expression(op_precedence)?;
+            println!("Parsed right side: {:?}", right);
             
-            Ok(Expression::Binary {
+            left = Expression::Binary {
                 left: Box::new(left),
                 operator,
                 right: Box::new(right),
-            })
-        } else {
-            Ok(left)
+            };
+        }
+
+        Ok(left)
+    }
+
+    fn parse_atom(&mut self) -> Result<Expression, String> {
+        match &self.current_token {
+            Token::LParen => {
+                self.next_token(); // consume '('
+                let expr = self.parse_expression()?;
+                
+                if self.current_token != Token::RParen {
+                    return Err("Expected ')'".to_string());
+                }
+                self.next_token(); // consume ')'
+                Ok(expr)
+            }
+            _ => self.parse_primary()
         }
     }
 
@@ -121,5 +160,25 @@ impl Parser {
 
     pub fn is_eof(&self) -> bool {
         self.current_token == Token::EOF
+    }
+}
+
+impl Expression {
+    pub fn evaluate(&self) -> Result<f64, String> {
+        match self {
+            Expression::Number(n) => Ok(*n),
+            Expression::Binary { left, operator, right } => {
+                let lhs = left.evaluate()?;
+                let rhs = right.evaluate()?;
+                match operator {
+                    Token::Plus => Ok(lhs + rhs),
+                    Token::Minus => Ok(lhs - rhs),
+                    Token::Star => Ok(lhs * rhs),
+                    Token::Slash => Ok(lhs / rhs),
+                    _ => Err("Invalid operator".to_string()),
+                }
+            }
+            _ => Err("Can't evaluate this expression".to_string()),
+        }
     }
 }

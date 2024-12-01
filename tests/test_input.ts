@@ -9,9 +9,9 @@ let diff = 10 - 4;
 let product = 6 * 7;
 let quotient = 15 / 3;
 
-// TODO: Complex arithmetic with precedence
-// let complex = (5 + 3) * 2;
-// let mixed = 1 + 2 * 3 / 4 - 5;
+//Complex arithmetic with precedence (currently supported)
+let complex = (5 + 3) * 2;
+let mixed = 1 + 2 * 3 / 4 - 5;
 
 // TODO: Variable operations
 // let z = x + y;
