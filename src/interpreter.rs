@@ -1,8 +1,8 @@
 //! Interpreter for TypeScript code
 
 use std::collections::HashMap;
-use crate::parser::{Expression, Statement};
-use crate::error::Result;
+use crate::parser::Statement;
+use crate::Result;
 
 pub struct Interpreter {
     variables: HashMap<String, Value>,
@@ -24,7 +24,9 @@ impl Interpreter {
     }
 
     pub fn eval(&mut self, stmt: Statement) -> Result<Value> {
-        // TODO: Implement evaluation
+        // print statement and variables
+        println!("{:?}", stmt);
+        println!("{:?}", self.variables);
         Ok(Value::Null)
     }
 }
