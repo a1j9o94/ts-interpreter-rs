@@ -13,9 +13,9 @@ let quotient = 15 / 3;
 let complex = (5 + 3) * 2;
 let mixed = 1 + 2 * 3 / 4 - 5;
 
-// TODO: Variable operations
-// let z = x + y;
-// let greeting = "Hello, " + name;
+// Variable operations (currently supported)
+let z = x + y;
+let greeting = "Hello, " + name;
 
 // TODO: Function declaration and calls
 // function add(a: number, b: number): number {

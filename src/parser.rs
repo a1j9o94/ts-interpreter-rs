@@ -162,23 +162,3 @@ impl Parser {
         self.current_token == Token::EOF
     }
 }
-
-impl Expression {
-    pub fn evaluate(&self) -> Result<f64, String> {
-        match self {
-            Expression::Number(n) => Ok(*n),
-            Expression::Binary { left, operator, right } => {
-                let lhs = left.evaluate()?;
-                let rhs = right.evaluate()?;
-                match operator {
-                    Token::Plus => Ok(lhs + rhs),
-                    Token::Minus => Ok(lhs - rhs),
-                    Token::Star => Ok(lhs * rhs),
-                    Token::Slash => Ok(lhs / rhs),
-                    _ => Err("Invalid operator".to_string()),
-                }
-            }
-            _ => Err("Can't evaluate this expression".to_string()),
-        }
-    }
-}
